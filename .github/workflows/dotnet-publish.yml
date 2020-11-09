@@ -1,7 +1,7 @@
-name: .NET Core - Build only
+name: .NET Core - Build and push
 
 on:
-  pull_request:
+  push:
     branches: [ main ]
 
 jobs:
@@ -29,3 +29,7 @@ jobs:
         path: |
           **/*.nupkg
           **/*.snupkg
+    - name: Publish
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k "$NUGET_API_KEY" --skip-duplicate -n 1
