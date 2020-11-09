@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>StructureMap.Microsoft.DependencyInjection</Description>
+    <PackageId>StructureMap.Microsoft.DependencyInjection.Forked</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

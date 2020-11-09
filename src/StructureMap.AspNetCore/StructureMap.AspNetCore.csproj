@@ -2,6 +2,7 @@
   <PropertyGroup>
     <Description>StructureMap.AspNetCore</Description>
     <PackageTags>$(PackageTags);AspNetCore</PackageTags>
+    <PackageId>StructureMap.AspNetCore.Forked</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
