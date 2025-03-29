@@ -114,7 +114,15 @@ namespace StructureMap
             }
         }
 
-        private static void Register(this IProfileRegistry registry, IEnumerable<ServiceDescriptor> descriptors)
+        /// <summary>
+        /// Registers the specified service descriptors.
+        /// </summary>
+        /// <remarks>
+        /// Unlike <see cref="Populate(Registry, IEnumerable{ServiceDescriptor})"/>, this method may be be called more than once per container.
+        /// </remarks>
+        /// <param name="registry">The registry.</param>
+        /// <param name="descriptors">The service descriptors.</param>
+        public static void Register(this IProfileRegistry registry, IEnumerable<ServiceDescriptor> descriptors)
         {
             foreach (var descriptor in descriptors)
             {
