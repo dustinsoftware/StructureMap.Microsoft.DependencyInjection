@@ -115,6 +115,17 @@ namespace StructureMap
         }
 
         /// <summary>
+        /// Configures <paramref name="registry"/> with <paramref name="configure"/>.
+        /// </summary>
+        /// <remarks>
+        /// Unlike <see cref="Populate(Registry, IEnumerable{ServiceDescriptor})"/>, this method may be be called more than once per container.
+        /// </remarks>
+        /// <param name="registry">The registry.</param>
+        /// <param name="configure">The service configurator.</param>
+        public static void Configure(this IProfileRegistry registry, Func<IServiceCollection, IServiceCollection> configure) =>
+            registry.Register(configure(new SimpleServiceCollection()));
+
+        /// <summary>
         /// Registers the specified service descriptors.
         /// </summary>
         /// <remarks>
@@ -161,5 +172,11 @@ namespace StructureMap
         }
 
         private interface IMarkerInterface { }
+
+        // We don't depend on the package that declares ServiceCollection,
+        // but even if we did this is slightly better because we don't need its IsReadOnly checks
+        private class SimpleServiceCollection : List<ServiceDescriptor>, IServiceCollection
+        {
+        }
     }
 }
