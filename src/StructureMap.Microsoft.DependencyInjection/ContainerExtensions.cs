@@ -63,21 +63,19 @@ namespace StructureMap
             ((Registry) config).Populate(descriptors, checkDuplicateCalls);
         }
 
-        /// <summary>
-        /// Populates the registry using the specified service descriptors.
-        /// </summary>
-        /// <remarks>
-        /// This method should only be called once per container.
-        /// </remarks>
-        /// <param name="registry">The registry.</param>
-        /// <param name="descriptors">The service descriptors.</param>
+        /// <inheritdoc cref="Populate(Registry, IEnumerable{ServiceDescriptor}, bool)"/>
         public static void Populate(this Registry registry, IEnumerable<ServiceDescriptor> descriptors)
         {
             registry.Populate(descriptors, checkDuplicateCalls: false);
         }
 
         /// <summary>
-        /// Populates the registry using the specified service descriptors.
+        /// Populates the registry using the specified service descriptors, plus:
+        /// <list type="bullet">
+        ///   <item><see cref="AspNetConstructorSelector"/></item>
+        ///   <item><see cref="StructureMapServiceProvider"/> as per-container <see cref="IServiceProvider"/></item>
+        ///   <item><see cref="StructureMapServiceScopeFactory"/> as per-container <see cref="IServiceScopeFactory"/></item>
+        /// </list>
         /// </summary>
         /// <remarks>
         /// This method should only be called once per container.
