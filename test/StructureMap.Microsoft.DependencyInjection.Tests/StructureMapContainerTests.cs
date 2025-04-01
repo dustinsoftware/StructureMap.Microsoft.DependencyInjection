@@ -38,6 +38,29 @@ namespace StructureMap.Microsoft.DependencyInjection.Tests
             return container.GetInstance<IServiceProvider>();
         }
 
+        [Fact]
+        public void ConfigureAndRegisterDoNotPreventPopulate()
+        {
+            var services = new ServiceCollection();
+            services.AddTransient<IFakeService, FakeService>();
+
+            var container = new Container();
+            container.Configure(config =>
+            {
+                config.Register(services);
+                config.Register(services);
+
+                config.Configure(ctx => ctx.AddScoped<IFakeScopedService, FakeService>());
+                config.Configure(ctx => ctx.AddSingleton<IFakeSingletonService, FakeService>());
+
+                config.Populate(services, checkDuplicateCalls: true);
+            });
+
+            Assert.NotNull(container.GetInstance<IFakeService>());
+            Assert.NotNull(container.GetInstance<IFakeSingletonService>());
+            Assert.NotNull(container.GetInstance<IFakeScopedService>());
+        }
+
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
