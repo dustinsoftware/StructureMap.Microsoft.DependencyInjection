@@ -4,12 +4,6 @@ on:
   push:
     branches: [ main ]
 
-name: .NET Core - Build only
-
-on:
-  pull_request:
-    branches: [ main ]
-
 jobs:
   build:
 
