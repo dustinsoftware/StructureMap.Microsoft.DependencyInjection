@@ -4,17 +4,23 @@ on:
   push:
     branches: [ main ]
 
+name: .NET Core - Build only
+
+on:
+  pull_request:
+    branches: [ main ]
+
 jobs:
   build:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.301
+        dotnet-version: 8.0.x
     - name: Install dependencies
       run: dotnet restore
     - name: Build
@@ -23,12 +29,13 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
     - name: Pack
       run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release -o .
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: nuget-packages
         path: |
           **/*.nupkg
           **/*.snupkg
+
     - name: Publish
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
