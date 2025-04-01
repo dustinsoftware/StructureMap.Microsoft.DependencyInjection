@@ -63,21 +63,19 @@ namespace StructureMap
             ((Registry) config).Populate(descriptors, checkDuplicateCalls);
         }
 
-        /// <summary>
-        /// Populates the registry using the specified service descriptors.
-        /// </summary>
-        /// <remarks>
-        /// This method should only be called once per container.
-        /// </remarks>
-        /// <param name="registry">The registry.</param>
-        /// <param name="descriptors">The service descriptors.</param>
+        /// <inheritdoc cref="Populate(Registry, IEnumerable{ServiceDescriptor}, bool)"/>
         public static void Populate(this Registry registry, IEnumerable<ServiceDescriptor> descriptors)
         {
             registry.Populate(descriptors, checkDuplicateCalls: false);
         }
 
         /// <summary>
-        /// Populates the registry using the specified service descriptors.
+        /// Populates the registry using the specified service descriptors, plus:
+        /// <list type="bullet">
+        ///   <item><see cref="AspNetConstructorSelector"/></item>
+        ///   <item><see cref="StructureMapServiceProvider"/> as per-container <see cref="IServiceProvider"/></item>
+        ///   <item><see cref="StructureMapServiceScopeFactory"/> as per-container <see cref="IServiceScopeFactory"/></item>
+        /// </list>
         /// </summary>
         /// <remarks>
         /// This method should only be called once per container.
@@ -116,7 +114,26 @@ namespace StructureMap
             }
         }
 
-        private static void Register(this IProfileRegistry registry, IEnumerable<ServiceDescriptor> descriptors)
+        /// <summary>
+        /// Configures <paramref name="registry"/> with <paramref name="configure"/>.
+        /// </summary>
+        /// <remarks>
+        /// Unlike <see cref="Populate(Registry, IEnumerable{ServiceDescriptor})"/>, this method may be be called more than once per container.
+        /// </remarks>
+        /// <param name="registry">The registry.</param>
+        /// <param name="configure">The service configurator.</param>
+        public static void Configure(this IProfileRegistry registry, Func<IServiceCollection, IServiceCollection> configure) =>
+            registry.Register(configure(new SimpleServiceCollection()));
+
+        /// <summary>
+        /// Registers the specified service descriptors.
+        /// </summary>
+        /// <remarks>
+        /// Unlike <see cref="Populate(Registry, IEnumerable{ServiceDescriptor})"/>, this method may be be called more than once per container.
+        /// </remarks>
+        /// <param name="registry">The registry.</param>
+        /// <param name="descriptors">The service descriptors.</param>
+        public static void Register(this IProfileRegistry registry, IEnumerable<ServiceDescriptor> descriptors)
         {
             foreach (var descriptor in descriptors)
             {
@@ -155,5 +172,11 @@ namespace StructureMap
         }
 
         private interface IMarkerInterface { }
+
+        // We don't depend on the package that declares ServiceCollection,
+        // but even if we did this is slightly better because we don't need its IsReadOnly checks
+        private class SimpleServiceCollection : List<ServiceDescriptor>, IServiceCollection
+        {
+        }
     }
 }

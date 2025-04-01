@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace StructureMap
 {
@@ -13,5 +14,13 @@ namespace StructureMap
         {
             return services.AddSingleton<IServiceProviderFactory<Registry>>(new StructureMapServiceProviderFactory(registry));
         }
+
+        /// <summary>
+        /// Configures <paramref name="services"/> with <paramref name="configure"/>.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <param name="configure">The service configurator.</param>
+        /// <returns>The result of <paramref name="configure"/>, which should be <paramref name="services"/>.</returns>
+        public static IServiceCollection Configure(this IServiceCollection services, Func<IServiceCollection, IServiceCollection> configure) => configure(services);
     }
 }
