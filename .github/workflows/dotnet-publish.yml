@@ -35,7 +35,6 @@ jobs:
         path: |
           **/*.nupkg
           **/*.snupkg
-
     - name: Publish
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
