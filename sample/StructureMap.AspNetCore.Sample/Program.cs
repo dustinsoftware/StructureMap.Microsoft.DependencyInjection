@@ -1,18 +1,39 @@
-﻿using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using StructureMap;
+using StructureMap.AspNetCore.Sample;
 
-namespace StructureMap.AspNetCore.Sample
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();
+builder.Services.AddMvc(options =>
 {
-    public static class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
+    options.EnableEndpointRouting = false;
+});
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStructureMap() // Add support for StructureMap
-                .UseStartup<Startup>();
-    }
+builder.Host
+    .UseServiceProviderFactory(new StructureMapContainerBuilderFactory())
+    .ConfigureContainer<Container>(container =>
+    {
+        container.Configure(config =>
+        {
+            config.AddRegistry(new SampleRegistry());
+        });
+    });
+
+var app = builder.Build();
+app.UseRouting();
+
+#pragma warning disable ASP0014
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
+#pragma warning restore ASP0014
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
 }
+app.Run();

@@ -1,70 +1,7 @@
-# .NET Core 3.1 Structuremap Integration
+# .NET 8 Structuremap Integration
 
 Available on Nuget here: https://www.nuget.org/packages/StructureMap.Microsoft.DependencyInjection.Forked/
 
 This was forked from [this underlying library](https://github.com/structuremap/StructureMap.Microsoft.DependencyInjection) due to [this bug](https://github.com/dustinsoftware/StructureMap.Microsoft.DependencyInjection/commit/0f1d8e445bfc430e1cdc7792045f5bb3356b68af) around Disposing objects.
 
-## Integration guide
-
-Program.cs:
-```cs
-public static IHostBuilder CreateHostBuilder(string[] args) =>
-    Host.CreateDefaultBuilder(args)
-        .UseServiceProviderFactory(new StructureMapContainerBuilderFactory())
-        .ConfigureWebHostDefaults(webBuilder =>
-        {
-            webBuilder.UseStartup<Startup>();
-        });
-```
-
-Startup.cs:
-```cs
-public void ConfigureServices(IServiceCollection services)
-{
-    services.AddControllers();
-}
-
-public void ConfigureContainer(Container builder)
-{
-    builder.Configure(config =>
-    {
-        // Your services here
-        config.AddRegistry(new MyRegistry());
-    });
-}
-```
-
-The registry:
-```cs
-public class MyRegistry : Registry
-{
-    public MyRegistry()
-    {
-        For<Something>().Singleton().Use<Something>();
-    }
-}
-```
-
-StructureMapContainerBuilderFactory.cs
-```cs
-public class StructureMapContainerBuilderFactory : IServiceProviderFactory<Container>
-{
-    private IServiceCollection _services;
-
-    public Container CreateBuilder(IServiceCollection services)
-    {
-        _services = services;
-        return new Container();
-    }
-
-    public IServiceProvider CreateServiceProvider(Container builder)
-    {
-        builder.Configure(config =>
-        {
-            config.Populate(_services);
-        });
-
-        return builder.GetInstance<IServiceProvider>();
-    }
-}
-```
+See the [sample app](./sample) for an example of how to integrate this in a .NET 8 app.
