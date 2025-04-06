@@ -61,6 +61,41 @@ namespace StructureMap.Microsoft.DependencyInjection.Tests
             Assert.NotNull(container.GetInstance<IFakeScopedService>());
         }
 
+        [Fact]
+        public void ConfigureDoesNotRequirePopulate()
+        {
+            var container = new Container();
+            container.Configure(config =>
+            {
+                config.Configure(services => services
+                    .AddScoped<IFakeScopedService>(_ => new FakeService())
+                );
+            });
+
+            Assert.NotNull(container.GetInstance<IFakeScopedService>());
+
+            Assert.NotNull(container.GetInstance<IServiceProvider>());
+            Assert.NotNull(container.GetInstance<IServiceScopeFactory>());
+        }
+
+        [Fact]
+        public void RegisterDoesNotRequirePopulate()
+        {
+            var container = new Container();
+            container.Configure(config =>
+            {
+                var services = new ServiceCollection()
+                    .AddScoped<IFakeScopedService>(_ => new FakeService());
+
+                config.Register(services);
+            });
+
+            Assert.NotNull(container.GetInstance<IFakeScopedService>());
+
+            Assert.NotNull(container.GetInstance<IServiceProvider>());
+            Assert.NotNull(container.GetInstance<IServiceScopeFactory>());
+        }
+
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
