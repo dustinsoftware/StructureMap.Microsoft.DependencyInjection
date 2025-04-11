@@ -95,14 +95,6 @@ namespace StructureMap
 
             registry.Policies.ConstructorSelector<AspNetConstructorSelector>();
 
-            registry.For<IServiceProvider>()
-                .LifecycleIs(Lifecycles.Container)
-                .Use<StructureMapServiceProvider>();
-
-            registry.For<IServiceScopeFactory>()
-                .LifecycleIs(Lifecycles.Container)
-                .Use<StructureMapServiceScopeFactory>();
-
             registry.Register(descriptors);
         }
 
@@ -135,6 +127,16 @@ namespace StructureMap
         /// <param name="descriptors">The service descriptors.</param>
         public static void Register(this IProfileRegistry registry, IEnumerable<ServiceDescriptor> descriptors)
         {
+            // Required for factory service descriptors
+            registry.For<IServiceProvider>()
+                .LifecycleIs(Lifecycles.Container)
+                .UseIfNone<StructureMapServiceProvider>();
+
+            // Required for scoped service descriptors
+            registry.For<IServiceScopeFactory>()
+                .LifecycleIs(Lifecycles.Container)
+                .UseIfNone<StructureMapServiceScopeFactory>();
+
             foreach (var descriptor in descriptors)
             {
                 registry.Register(descriptor);
