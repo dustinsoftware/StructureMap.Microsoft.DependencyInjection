@@ -137,6 +137,11 @@ namespace StructureMap
                 .LifecycleIs(Lifecycles.Container)
                 .UseIfNone<StructureMapServiceScopeFactory>();
 
+            // Added in MEDI v6
+            registry.For<IServiceProviderIsService>()
+                .LifecycleIs(Lifecycles.Container)
+                .UseIfNone<StructureMapServiceProviderIsService>();
+
             foreach (var descriptor in descriptors)
             {
                 registry.Register(descriptor);

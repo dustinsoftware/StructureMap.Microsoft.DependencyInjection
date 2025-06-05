@@ -12,8 +12,6 @@ namespace StructureMap.Microsoft.DependencyInjection.Tests
 {
     public class StructureMapContainerTests : DependencyInjectionSpecificationTests
     {
-        public override bool SupportsIServiceProviderIsService => false;
-
         // The following tests don't pass with the SM adapter...
         private static readonly string[] SkippedTests =
         {
@@ -61,6 +59,14 @@ namespace StructureMap.Microsoft.DependencyInjection.Tests
             Assert.NotNull(container.GetInstance<IFakeService>());
             Assert.NotNull(container.GetInstance<IFakeSingletonService>());
             Assert.NotNull(container.GetInstance<IFakeScopedService>());
+
+            var spis = container.GetInstance<IServiceProviderIsService>();
+            Assert.True(spis.IsService(typeof(IFakeService)));
+            Assert.True(spis.IsService(typeof(IFakeScopedService)));
+            Assert.True(spis.IsService(typeof(IFakeSingletonService)));
+
+            Assert.False(spis.IsService(typeof(FakeService)));
+            Assert.False(spis.IsService(typeof(IFakeServiceInstance)));
         }
 
         [Fact]
@@ -77,6 +83,7 @@ namespace StructureMap.Microsoft.DependencyInjection.Tests
             Assert.NotNull(container.GetInstance<IFakeScopedService>());
 
             Assert.NotNull(container.GetInstance<IServiceProvider>());
+            Assert.NotNull(container.GetInstance<IServiceProviderIsService>());
             Assert.NotNull(container.GetInstance<IServiceScopeFactory>());
         }
 
@@ -95,6 +102,7 @@ namespace StructureMap.Microsoft.DependencyInjection.Tests
             Assert.NotNull(container.GetInstance<IFakeScopedService>());
 
             Assert.NotNull(container.GetInstance<IServiceProvider>());
+            Assert.NotNull(container.GetInstance<IServiceProviderIsService>());
             Assert.NotNull(container.GetInstance<IServiceScopeFactory>());
         }
 
