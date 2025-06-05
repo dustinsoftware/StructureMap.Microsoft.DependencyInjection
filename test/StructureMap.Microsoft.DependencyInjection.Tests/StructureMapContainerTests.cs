@@ -12,6 +12,8 @@ namespace StructureMap.Microsoft.DependencyInjection.Tests
 {
     public class StructureMapContainerTests : DependencyInjectionSpecificationTests
     {
+        public override bool SupportsIServiceProviderIsService => false;
+
         // The following tests don't pass with the SM adapter...
         private static readonly string[] SkippedTests =
         {
