@@ -29,13 +29,11 @@ namespace StructureMap
                 return true;
             }
 
-
             if (serviceType.IsConstructedGenericType && serviceType.GetGenericTypeDefinition() is Type genericDefinition)
             {
                 // We special case IEnumerable since it isn't explicitly registered in the container
                 // yet we can manifest instances of it when requested.
-                return genericDefinition == typeof(IEnumerable<>) ||
-                    _container.Model.HasDefaultImplementationFor(genericDefinition);
+                return genericDefinition == typeof(IEnumerable<>);
             }
 
             return false;
