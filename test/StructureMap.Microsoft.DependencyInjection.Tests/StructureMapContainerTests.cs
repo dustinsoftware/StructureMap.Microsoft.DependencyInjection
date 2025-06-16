@@ -43,6 +43,7 @@ namespace StructureMap.Microsoft.DependencyInjection.Tests
         {
             var services = new ServiceCollection();
             services.AddTransient<IFakeService, FakeService>();
+            services.AddSingleton<IComparer<string>>(StringComparer.OrdinalIgnoreCase);
 
             var container = new Container();
             container.Configure(config =>
@@ -67,6 +68,25 @@ namespace StructureMap.Microsoft.DependencyInjection.Tests
 
             Assert.False(spis.IsService(typeof(FakeService)));
             Assert.False(spis.IsService(typeof(IFakeServiceInstance)));
+
+            // Open generics never resolve
+            Assert.False(spis.IsService(typeof(IComparer<>)));
+            Assert.False(spis.IsService(typeof(IEnumerable<>)));
+
+            // Registered closed generic does resolve
+            Assert.True(spis.IsService(typeof(IComparer<string>)));
+
+            // Unregistered closed generic does not resolve
+            Assert.False(spis.IsService(typeof(IComparer<IFakeService>)));
+
+            // IEnumerable<> of registered types does resolve
+            Assert.True(spis.IsService(typeof(IEnumerable<IFakeService>)));
+            Assert.True(spis.IsService(typeof(IEnumerable<IFakeScopedService>)));
+            Assert.True(spis.IsService(typeof(IEnumerable<IFakeSingletonService>)));
+
+            // IEnumerable<> of unregistered types also resolves
+            Assert.True(spis.IsService(typeof(IEnumerable<FakeService>)));
+            Assert.True(spis.IsService(typeof(IEnumerable<IFakeServiceInstance>)));
         }
 
         [Fact]
